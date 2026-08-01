@@ -78,6 +78,7 @@ src/
 └── utils/        # Constants, helpers, validators, storage, date, permissions
 ```
 
+
 ## Available Scripts
 
 | Command              | Description                     |
@@ -87,3 +88,4 @@ src/
 | `npm run lint`       | Run ESLint (0 warnings allowed) |
 | `npm run build`      | Typecheck + production build    |
 | `npm run preview`    | Preview the production build    |
+
