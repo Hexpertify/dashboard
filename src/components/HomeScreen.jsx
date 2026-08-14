@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Clock, Heart, Mic, Play, Wind } from 'lucide-react';
 import { FloatingBits, SENSE_COLORS } from './decorations';
 
@@ -149,47 +150,60 @@ export function HomeScreen({ senses, onStart }) {
   );
 }
 
+function useMedia(query) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const handler = (event) => setMatches(event.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [query]);
+  return matches;
+}
+
 function HeroVisual({ senses }) {
+  const isDesktop = useMedia('(min-width: 640px)');
+  const radius = isDesktop ? 130 : 95;
   return (
     <div
       aria-hidden="true"
-      className="relative grid h-96 w-96 shrink-0 place-items-center rounded-[2.5rem] border border-white/70 bg-white/60 shadow-[0_24px_60px_rgba(69,11,200,0.1)] backdrop-blur"
+      className="relative grid h-72 w-72 shrink-0 place-items-center rounded-[2rem] border border-white/70 bg-white/60 shadow-[0_24px_60px_rgba(69,11,200,0.1)] backdrop-blur sm:h-96 sm:w-96 sm:rounded-[2.5rem]"
     >
-      <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-[#C4B5FD]/40 blur-2xl" />
-      <div className="absolute -bottom-10 -right-10 h-44 w-44 rounded-full bg-[#A7F3D0]/40 blur-2xl" />
-      <div className="absolute -right-8 top-16 h-32 w-32 rounded-full bg-[#FBCFE8]/40 blur-2xl" />
+      <div className="absolute -left-10 -top-10 h-28 w-28 rounded-full bg-[#C4B5FD]/40 blur-2xl sm:h-40 sm:w-40" />
+      <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full bg-[#A7F3D0]/40 blur-2xl sm:h-44 sm:w-44" />
+      <div className="absolute -right-6 top-12 h-24 w-24 rounded-full bg-[#FBCFE8]/40 blur-2xl sm:-right-8 sm:top-16 sm:h-32 sm:w-32" />
 
       <div className="relative grid place-items-center">
         <span
-          className="absolute h-40 w-40 rounded-full animate-breathe"
+          className="absolute h-28 w-28 rounded-full animate-breathe sm:h-40 sm:w-40"
           style={{ backgroundColor: 'rgba(69,11,200,0.08)' }}
         />
         <span
-          className="absolute h-56 w-56 rounded-full border border-[#E9E4F5]"
+          className="absolute h-40 w-40 rounded-full border border-[#E9E4F5] sm:h-56 sm:w-56"
           style={{ animation: 'ring 3s ease-out infinite' }}
         />
         <span
-          className="absolute h-56 w-56 rounded-full border border-[#E9E4F5]"
+          className="absolute h-40 w-40 rounded-full border border-[#E9E4F5] sm:h-56 sm:w-56"
           style={{ animation: 'ring 3s ease-out infinite 1.5s' }}
         />
-        <span className="grid h-24 w-24 place-items-center rounded-full bg-white shadow-[0_14px_36px_rgba(69,11,200,0.16)]">
-          <Heart className="h-10 w-10" style={{ color: '#450BC8' }} fill="currentColor" strokeWidth={1.6} />
+        <span className="grid h-20 w-20 place-items-center rounded-full bg-white shadow-[0_14px_36px_rgba(69,11,200,0.16)] sm:h-24 sm:w-24">
+          <Heart className="h-8 w-8 sm:h-10 sm:w-10" style={{ color: '#450BC8' }} fill="currentColor" strokeWidth={1.6} />
         </span>
         {senses.map((sense, index) => {
           const colors = SENSE_COLORS[sense.key];
           const angle = (index / senses.length) * 2 * Math.PI - Math.PI / 2;
-          const x = Math.cos(angle) * 130;
-          const y = Math.sin(angle) * 130;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
           return (
             <span
               key={sense.key}
-              className="absolute grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-[0_8px_22px_rgba(69,11,200,0.12)] animate-float"
+              className="absolute grid h-11 w-11 place-items-center rounded-xl bg-white shadow-[0_8px_22px_rgba(69,11,200,0.12)] animate-float sm:h-14 sm:w-14 sm:rounded-2xl"
               style={{
                 transform: `translate(${x}px, ${y}px)`,
                 animationDelay: `${index * 0.5}s`,
               }}
             >
-              <sense.Icon size={24} style={{ color: colors.accent }} strokeWidth={1.8} />
+              <sense.Icon size={isDesktop ? 24 : 20} style={{ color: colors.accent }} strokeWidth={1.8} />
             </span>
           );
         })}
