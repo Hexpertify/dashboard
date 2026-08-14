@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { CompletionIllustration, FloatingBits, SENSE_COLORS } from './decorations';
+import { CompletionIllustration, FloatingBits } from './decorations';
 
-export function CompletionScreen({ onRestart, total, observations }) {
+export function CompletionScreen({ onRestart }) {
   const [staying, setStaying] = useState(false);
 
   if (staying) {
@@ -40,8 +40,6 @@ export function CompletionScreen({ onRestart, total, observations }) {
     );
   }
 
-  const noticed = Object.entries(observations).filter(([, items]) => items && items.length > 0);
-
   return (
     <div className="relative mx-auto flex min-h-[100dvh] max-w-lg flex-col items-center justify-center px-6 py-12 text-center">
       <FloatingBits />
@@ -53,48 +51,13 @@ export function CompletionScreen({ onRestart, total, observations }) {
         You are <span className="text-[#450BC8]">here.</span>
       </h1>
       <p className="mt-4 max-w-md text-sm leading-7 text-[#8B8294] animate-rise" style={{ animationDelay: '150ms' }}>
-        You noticed your surroundings, your body and this moment through your five senses.
+        You paused, breathed, and noticed the world around you through all five senses.
       </p>
-
-      <div className="mt-5 w-full max-w-md animate-rise" style={{ animationDelay: '250ms' }}>
-        <div className="rounded-2xl border border-[#E9E4F5] bg-white/80 px-5 py-4 shadow-[0_8px_24px_rgba(69,11,200,0.06)]">
-          <p className="text-sm font-extrabold text-[#2B2433]">
-            You noticed {total} thing{total === 1 ? '' : 's'} around you. 🌱
-          </p>
-          <p className="mt-1 text-xs leading-5 text-[#8B8294]">
-            You took a moment to slow down and connect with the present.
-          </p>
-          {noticed.length > 0 && (
-            <div className="mt-4 space-y-2.5 border-t border-[#F1EDF7] pt-3.5">
-              {noticed.map(([key, items]) => (
-                <div key={key} className="flex flex-wrap items-center justify-center gap-1.5">
-                  <span
-                    className="w-12 shrink-0 text-[10px] font-extrabold uppercase tracking-[0.14em] text-left"
-                    style={{ color: SENSE_COLORS[key].accent }}
-                  >
-                    {key}
-                  </span>
-                  {items.map((item, index) => (
-                    <span
-                      key={`${item}-${index}`}
-                      className="rounded-full border bg-white px-2.5 py-1 text-[11px] font-medium text-[#6F6580]"
-                      style={{ borderColor: SENSE_COLORS[key].soft }}
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <p className="mt-6 text-sm font-bold text-[#450BC8] animate-rise" style={{ animationDelay: '350ms' }}>
+      <p className="mt-6 text-sm font-bold text-[#450BC8] animate-rise" style={{ animationDelay: '300ms' }}>
         Take one more slow breath.
       </p>
 
-      <div className="mt-7 flex w-full max-w-xs flex-col gap-3 animate-rise" style={{ animationDelay: '450ms' }}>
+      <div className="mt-9 flex w-full max-w-xs flex-col gap-3 animate-rise" style={{ animationDelay: '450ms' }}>
         <button
           type="button"
           onClick={onRestart}
