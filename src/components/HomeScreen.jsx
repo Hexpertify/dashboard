@@ -133,7 +133,7 @@ export function HomeScreen({ senses, onStart }) {
 
       <section id="why" className="mx-auto max-w-3xl py-8 text-center">
         <h2 className="text-xl font-extrabold tracking-[-0.02em] text-[#2B2433] sm:text-2xl">
-          Why grounding works
+          Why self soothing works
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#8B8294]">
           When your mind feels scattered, the five senses anchor you in the present. Guided by
