@@ -69,6 +69,53 @@ export function GuidedJourney({ senses, onDone, onExit }) {
   const previousGuidanceRef = useRef([]);
   const sessionIdRef = useRef(0);
   const isTransitioningRef = useRef(false);
+  const preferredVoiceRef = useRef(null);
+
+  const selectPreferredVoice = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const preferred = voices.find((v) => (v.lang || '').toLowerCase().startsWith('en') && /neural|wavenet|google|samantha|alloy|aria|joanna|matthew|amy|brian|zira|david|jenny/i.test((v.name || '') + ' ' + (v.voiceURI || '')));
+    if (preferred) return preferred;
+    const anyEn = voices.find((v) => (v.lang || '').toLowerCase().startsWith('en'));
+    return anyEn || voices[0] || null;
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const setPreferred = () => { preferredVoiceRef.current = selectPreferredVoice(); };
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length) setPreferred();
+      window.speechSynthesis.addEventListener('voiceschanged', setPreferred);
+      return () => { try { window.speechSynthesis.removeEventListener('voiceschanged', setPreferred); } catch (e) {} };
+    }
+  }, []);
+
+  const speakNow = (text) => {
+    if (!text || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    try {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+      const sentences = text.split(/(?<=\.|\?|!|\u201D)\s+/).filter(Boolean);
+      const preferredVoice = preferredVoiceRef.current || selectPreferredVoice();
+      const speakQueued = () => {
+        sentences.forEach((s, i) => {
+          const utt = new SpeechSynthesisUtterance(s);
+          utt.lang = 'en-US';
+          utt.rate = 0.98;
+          utt.pitch = 1.05;
+          utt.volume = 1.0;
+          if (preferredVoice) utt.voice = preferredVoice;
+          if (i === 0) {
+            utt.onstart = () => { setIsSpeaking(true); setIsGenerating(false); setIsFallback(true); try { setDynamicSubtext(text); } catch (e) {} };
+          }
+          if (i === sentences.length - 1) {
+            utt.onend = () => { setIsSpeaking(false); };
+          }
+          window.speechSynthesis.speak(utt);
+        });
+      };
+      setTimeout(speakQueued, 80);
+    } catch (e) {}
+  };
 
   mutedRef.current = muted;
   pausedRef.current = paused;
@@ -88,27 +135,22 @@ export function GuidedJourney({ senses, onDone, onExit }) {
       return;
     }
 
+    // Force using Web Speech API (speechSynthesis) for the entire guided session for timing reliability
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        speakNow(text);
+        return;
+      } catch (e) {
+        // fall back to aiVoiceService if speakNow fails
+      }
+    }
+
     aiVoiceService.playSpeech(text, {
-      onGenerating: () => {
-        setIsGenerating(true);
-        setIsSpeaking(false);
-      },
-      onStart: ({ mode }) => {
-        setIsGenerating(false);
-        setIsSpeaking(true);
-        setIsFallback(mode === 'fallback');
-      },
-      onEnd: () => {
-        setIsGenerating(false);
-        setIsSpeaking(false);
-      },
-      onError: () => {
-        setIsGenerating(false);
-        setIsSpeaking(false);
-      },
-      onFallback: () => {
-        setIsFallback(true);
-      },
+      onGenerating: () => { setIsGenerating(true); setIsSpeaking(false); },
+      onStart: ({ mode }) => { setIsGenerating(false); setIsSpeaking(true); setIsFallback(mode === 'fallback'); },
+      onEnd: () => { setIsGenerating(false); setIsSpeaking(false); },
+      onError: () => { setIsGenerating(false); setIsSpeaking(false); },
+      onFallback: () => { setIsFallback(true); },
       isMuted: mutedRef.current,
     });
   }, []);
@@ -187,54 +229,6 @@ export function GuidedJourney({ senses, onDone, onExit }) {
       setDynamicSubtext(currentStep.subtext || '');
     }
     playGentleChime();
-
-    // Helper: pick a clear, native/neural English voice when available
-    const selectPreferredVoice = () => {
-      if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
-      const voices = window.speechSynthesis.getVoices() || [];
-      // prefer modern neural / high quality voices by name hints, then any en-* voice
-      const preferred = voices.find((v) => (v.lang || '').toLowerCase().startsWith('en') && /neural|wavenet|google|samantha|alloy|aria|joanna|matthew|amy|brian|zira|david|jenny/i.test((v.name || '') + ' ' + (v.voiceURI || '')));
-      if (preferred) return preferred;
-      const anyEn = voices.find((v) => (v.lang || '').toLowerCase().startsWith('en'));
-      return anyEn || voices[0] || null;
-    };
-
-    // Helper: direct low-level speechSynthesis play for maximum timing reliability
-    const speakNow = (text) => {
-      if (!text || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-      try {
-        // stop any prior speech
-        try { window.speechSynthesis.cancel(); } catch (e) {}
-
-        const sentences = text.split(/(?<=\.|\?|!|\u201D)\s+/).filter(Boolean);
-        const preferredVoice = selectPreferredVoice();
-        sentences.forEach((s, i) => {
-          const utt = new SpeechSynthesisUtterance(s);
-          utt.lang = 'en-US';
-          utt.rate = 0.98; // slightly faster but clear
-          utt.pitch = 1.05; // slightly warmer
-          utt.volume = 1.0;
-          if (preferredVoice) utt.voice = preferredVoice;
-          // mark speaking state: set true on first utterance, clear on last
-          if (i === 0) {
-            utt.onstart = () => {
-              setIsSpeaking(true);
-              setIsGenerating(false);
-              setIsFallback(true);
-            };
-          }
-          if (i === sentences.length - 1) {
-            utt.onend = () => {
-              setIsSpeaking(false);
-            };
-          }
-          // speak immediately; browser will queue utterances in order
-          window.speechSynthesis.speak(utt);
-        });
-      } catch (e) {
-        // ignore
-      }
-    };
 
     // Immediately trigger time-0 guidance (if any) so voice starts exactly with the timer
     try {
@@ -317,35 +311,11 @@ export function GuidedJourney({ senses, onDone, onExit }) {
                 try {
                   // stop any lingering speech to avoid stuck state and ensure immediate playback
                   aiVoiceService.stopSpeech();
-                  // direct speak for high reliability
+                  // use speakNow helper for reliable playback (handles cancel/delay and voice selection)
                   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-                    try { window.speechSynthesis.cancel(); } catch (e) {}
-                    const utt = new SpeechSynthesisUtterance(cue.text);
-                    utt.lang = 'en-US';
-                    utt.rate = 0.98;
-                    utt.pitch = 1.05;
-                    utt.volume = 1.0;
-                    const preferred = selectPreferredVoice();
-                    if (preferred) {
-                      utt.voice = preferred;
-                    } else {
-                      const voices = window.speechSynthesis.getVoices() || [];
-                      const eng = voices.find((v) => v.lang && v.lang.startsWith('en')) || voices[0];
-                      if (eng) utt.voice = eng;
-                    }
-                    // reflect speaking state for UI
-                    utt.onstart = () => {
-                      setIsSpeaking(true);
-                      setIsGenerating(false);
-                      setIsFallback(true);
-                      setDynamicSubtext(cue.text);
-                    };
-                    utt.onend = () => {
-                      setIsSpeaking(false);
-                    };
-                    window.speechSynthesis.speak(utt);
+                    speakNow(cue.text);
                   } else {
-                    aiVoiceService.playFallback(cue.text, { onStart: () => { setIsSpeaking(true); setIsFallback(true); }, onEnd: () => { setIsSpeaking(false); }, onError: () => { setIsSpeaking(false); } });
+                    aiVoiceService.playFallback(cue.text, { onStart: () => { setIsSpeaking(true); setIsFallback(true); setDynamicSubtext(cue.text); }, onEnd: () => { setIsSpeaking(false); }, onError: () => { setIsSpeaking(false); } });
                   }
                 } catch (e) {
                   // fallback to original trigger
