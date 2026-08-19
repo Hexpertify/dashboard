@@ -1,24 +1,17 @@
 import {
   Bird,
-  Candy,
-  Citrus,
-  Coffee,
-  Cookie,
   Flower2,
-  Hand,
-  Headphones,
   Leaf,
-  Music2,
   Sparkles,
   Star,
 } from 'lucide-react';
 
 export const SENSE_COLORS = {
-  see: { accent: '#0284C7', soft: '#BAE6FD', wash: '#EAF6FF' },
-  hear: { accent: '#7C3AED', soft: '#C4B5FD', wash: '#F5F1FF' },
-  feel: { accent: '#059669', soft: '#A7F3D0', wash: '#ECFDF5' },
-  smell: { accent: '#EA580C', soft: '#FED7AA', wash: '#FFF7ED' },
-  taste: { accent: '#DB2777', soft: '#FBCFE8', wash: '#FDF2F8' },
+  touch: { accent: '#059669', soft: '#A7F3D0', wash: '#ECFDF5', border: '#6EE7B7', lightBg: 'rgba(167,243,208,0.25)' },
+  sight: { accent: '#0284C7', soft: '#BAE6FD', wash: '#EAF6FF', border: '#7DD3FC', lightBg: 'rgba(186,230,253,0.25)' },
+  sound: { accent: '#7C3AED', soft: '#C4B5FD', wash: '#F5F1FF', border: '#DDD6FE', lightBg: 'rgba(196,181,253,0.25)' },
+  smell: { accent: '#EA580C', soft: '#FED7AA', wash: '#FFF7ED', border: '#FDBA74', lightBg: 'rgba(254,215,170,0.25)' },
+  taste: { accent: '#DB2777', soft: '#FBCFE8', wash: '#FDF2F8', border: '#F9A8D4', lightBg: 'rgba(251,207,232,0.25)' },
 };
 
 const FLOATERS = [
@@ -63,161 +56,170 @@ function PastelBlobs({ colors }) {
   );
 }
 
-export function SeeIllustration() {
+/* ==========================================================================
+   1. TOUCH ILLUSTRATION
+   Action: A natural human's hand reaching toward and physically touching a soft leaf.
+   ========================================================================== */
+export function TouchIllustration() {
   return (
-    <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-3xl sm:h-64">
-      <PastelBlobs colors={SENSE_COLORS.see} />
-      <div className="relative flex h-full w-full items-end justify-center pb-5">
-        <div
-          className="absolute left-1/2 top-6 h-14 w-14 -translate-x-1/2 rounded-full bg-gradient-to-br from-amber-200 to-orange-300 animate-glow sm:top-8 sm:h-16 sm:w-16"
-          aria-hidden="true"
+    <div
+      role="img"
+      aria-label="Human gently touching a comfortable object"
+      className="relative flex h-56 sm:h-72 w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-white bg-white/60 shadow-sm backdrop-blur p-4 pb-5"
+      style={{ backgroundColor: SENSE_COLORS.touch.wash }}
+    >
+      <PastelBlobs colors={SENSE_COLORS.touch} />
+
+      <div className="absolute top-[15%] left-[10%] animate-sway hidden sm:block z-0 opacity-70">
+        <Leaf className="text-[#059669]" size={42} fill="#A7F3D0" />
+      </div>
+
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center animate-gentle-breathe">
+        <img
+          src="/images/touch.png"
+          alt="Friendly transparent 3D character touching object"
+          className="max-h-[140px] sm:max-h-[190px] w-auto object-contain drop-shadow-xl"
         />
-        <span className="absolute right-[18%] top-[20%] animate-float">
-          <Bird size={26} style={{ color: '#C084FC' }} strokeWidth={1.7} />
-        </span>
-        <div className="flex items-end gap-2">
-          <Tree />
-          <FlowerStem />
-          <Tree small />
-        </div>
+      </div>
+
+      <div className="relative z-20 mt-3 rounded-full bg-white/95 backdrop-blur-xl border border-[#6EE7B7]/50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[#059669] shadow-sm">
+        Touch Object
       </div>
     </div>
   );
 }
 
-function Tree({ small }) {
+/* ==========================================================================
+   2. SIGHT ILLUSTRATION
+   Action: A natural human observing calming scenery, eyes explicitly focused.
+   ========================================================================== */
+export function SightIllustration() {
   return (
-    <span className={`relative flex items-end justify-center ${small ? 'h-12 w-7' : 'h-16 w-9'}`}>
-      <span className="h-full w-4 rounded-t-full bg-[#4ADE80] sm:w-5" />
-      <span className="absolute -bottom-1 h-4 w-2.5 rounded-sm bg-[#B45309]" />
-    </span>
-  );
-}
+    <div
+      role="img"
+      aria-label="Human observing calming scenery"
+      className="relative flex h-56 sm:h-72 w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-white bg-white/60 shadow-sm backdrop-blur p-4 pb-5"
+      style={{ backgroundColor: SENSE_COLORS.sight.wash }}
+    >
+      <PastelBlobs colors={SENSE_COLORS.sight} />
 
-function FlowerStem() {
-  return (
-    <span className="relative flex h-14 w-8 items-end justify-center">
-      <span className="h-full w-1 rounded-full bg-[#A3E635]" />
-      <Flower2
-        className="absolute -top-4"
-        size={22}
-        style={{ color: '#F472B6' }}
-        strokeWidth={1.8}
-      />
-    </span>
-  );
-}
+      <div className="absolute top-[15%] right-[15%] animate-pulse hidden sm:block z-0 opacity-70">
+        <Sparkles className="text-[#0284C7]" size={36} fill="#BAE6FD" />
+      </div>
 
-export function HearIllustration() {
-  return (
-    <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-3xl sm:h-64">
-      <PastelBlobs colors={SENSE_COLORS.hear} />
-      <div className="relative grid place-items-center">
-        <span className="absolute h-28 w-28 rounded-full border-2 border-white/70 animate-ring sm:h-36 sm:w-36" />
-        <span
-          className="absolute h-28 w-28 rounded-full border-2 border-white/70 animate-ring sm:h-36 sm:w-36"
-          style={{ animationDelay: '1.5s' }}
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center animate-gentle-breathe">
+        <img
+          src="/images/sight.png"
+          alt="Friendly transparent 3D character observing scenery"
+          className="max-h-[140px] sm:max-h-[190px] w-auto object-contain drop-shadow-xl"
         />
-        <span className="grid h-24 w-24 place-items-center rounded-full bg-white/80 shadow-[0_10px_30px_rgba(124,58,237,0.18)] sm:h-32 sm:w-32">
-          <Headphones size={52} style={{ color: SENSE_COLORS.hear.accent }} strokeWidth={1.6} />
-        </span>
-        <MusicNote style={{ top: '8%', left: '12%' }} />
-        <MusicNote style={{ bottom: '14%', right: '12%', animationDelay: '1.8s' }} />
-        <Sparkles
-          size={18}
-          className="absolute right-[18%] top-[16%] animate-twinkle"
-          style={{ color: '#C4B5FD' }}
-        />
+      </div>
+
+      <div className="relative z-20 mt-3 rounded-full bg-white/95 backdrop-blur-xl border border-[#7DD3FC]/50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[#0284C7] shadow-sm">
+        Look & Observe
       </div>
     </div>
   );
 }
 
-function MusicNote({ style }) {
+/* ==========================================================================
+   3. SOUND ILLUSTRATION
+   Action: A natural human with head turned toward sound waves to show listening.
+   ========================================================================== */
+export function SoundIllustration() {
   return (
-    <span className="absolute animate-float" style={style}>
-      <Music2 size={22} style={{ color: '#8B5CF6' }} strokeWidth={1.8} />
-    </span>
-  );
-}
+    <div
+      role="img"
+      aria-label="Human explicitly listening to sounds"
+      className="relative flex h-56 sm:h-72 w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-white bg-white/60 shadow-sm backdrop-blur p-4 pb-5"
+      style={{ backgroundColor: SENSE_COLORS.sound.wash }}
+    >
+      <PastelBlobs colors={SENSE_COLORS.sound} />
 
-export function FeelIllustration() {
-  return (
-    <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-3xl sm:h-64">
-      <PastelBlobs colors={SENSE_COLORS.feel} />
-      <div className="relative grid place-items-center">
-        <span
-          className="absolute h-36 w-36 rounded-full opacity-60 blur-xl sm:h-44 sm:w-44"
-          style={{ backgroundColor: 'rgba(5,150,105,0.16)' }}
+      {/* Decorative animated sound waves elegantly blended */}
+      <div className="absolute top-[20%] left-[15%] flex flex-col items-center gap-1.5 hidden sm:flex animate-aroma z-0 opacity-60">
+        <div className="h-8 w-1.5 rounded-full bg-[#7C3AED] animate-soundbar-1" />
+        <div className="h-12 w-1.5 rounded-full bg-[#C4B5FD] animate-soundbar-2" />
+        <div className="h-6 w-1.5 rounded-full bg-[#7C3AED] animate-soundbar-3" />
+      </div>
+
+      <div className="absolute top-[18%] right-[15%] animate-float hidden sm:block z-0 opacity-70">
+        <Bird className="text-[#7C3AED]" size={36} fill="#E9D5FF" />
+      </div>
+
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center animate-gentle-breathe">
+        <img
+          src="/images/sound.png"
+          alt="Friendly transparent 3D character listening"
+          className="max-h-[140px] sm:max-h-[190px] w-auto object-contain drop-shadow-xl"
         />
-        <span
-          className="absolute h-28 w-28 rounded-full animate-breathe sm:h-36 sm:w-36"
-          style={{ backgroundColor: 'rgba(5,150,105,0.14)' }}
-        />
-        <span className="grid h-24 w-24 place-items-center rounded-full bg-white/80 shadow-[0_10px_30px_rgba(5,150,105,0.18)] sm:h-32 sm:w-32">
-          <Hand size={50} style={{ color: SENSE_COLORS.feel.accent }} strokeWidth={1.6} />
-        </span>
-        <span className="absolute -top-2 left-[12%] h-3 w-3 rounded-full bg-[#A7F3D0] animate-twinkle" />
-        <span
-          className="absolute -bottom-1 right-[14%] h-2.5 w-2.5 rounded-full bg-[#6EE7B7] animate-twinkle"
-          style={{ animationDelay: '1.2s' }}
-        />
+      </div>
+
+      <div className="relative z-20 mt-3 rounded-full bg-white/95 backdrop-blur-xl border border-[#DDD6FE]/50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[#7C3AED] shadow-sm">
+        Listen Closely
       </div>
     </div>
   );
 }
 
+/* ==========================================================================
+   4. SMELL ILLUSTRATION
+   Action: A natural human holding a flower near their nose and smelling it.
+   ========================================================================== */
 export function SmellIllustration() {
   return (
-    <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-3xl sm:h-64">
+    <div
+      role="img"
+      aria-label="Human explicitly smelling a flower near nose"
+      className="relative flex h-56 sm:h-72 w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-white bg-white/60 shadow-sm backdrop-blur p-4 pb-5"
+      style={{ backgroundColor: SENSE_COLORS.smell.wash }}
+    >
       <PastelBlobs colors={SENSE_COLORS.smell} />
-      <div className="relative flex items-end gap-6">
-        <span className="animate-sway">
-          <Flower2 size={46} style={{ color: '#F97316' }} strokeWidth={1.6} />
-        </span>
-        <div className="relative grid h-24 w-24 place-items-center rounded-full bg-white/80 shadow-[0_10px_30px_rgba(234,88,12,0.16)] sm:h-28 sm:w-28">
-          <Coffee size={44} style={{ color: SENSE_COLORS.smell.accent }} strokeWidth={1.6} />
-          {[0, 0.9, 1.8].map((delay) => (
-            <span
-              key={delay}
-              className="absolute top-[18%] h-2 w-2 rounded-full animate-rise-up"
-              style={{ backgroundColor: '#FED7AA', animationDelay: `${delay}s` }}
-            />
-          ))}
-        </div>
-        <span className="animate-sway" style={{ animationDelay: '1.4s' }}>
-          <Leaf size={34} style={{ color: '#84CC16' }} strokeWidth={1.6} />
-        </span>
+
+      {/* Animated aroma particles */}
+      <div className="absolute top-[25%] right-[15%] animate-sway hidden sm:block z-0 opacity-70">
+        <Flower2 className="text-[#EA580C]" size={36} fill="#FED7AA" />
+      </div>
+
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center animate-gentle-breathe">
+        <img
+          src="/images/smell.png"
+          alt="Friendly transparent 3D character smelling a flower"
+          className="max-h-[140px] sm:max-h-[190px] w-auto object-contain drop-shadow-xl"
+        />
+      </div>
+
+      <div className="relative z-20 mt-3 rounded-full bg-white/95 backdrop-blur-xl border border-[#FDBA74]/50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[#EA580C] shadow-sm">
+        Smell Scent
       </div>
     </div>
   );
 }
 
+/* ==========================================================================
+   5. TASTE ILLUSTRATION
+   Action: A natural human bringing a comforting cup to their visible mouth.
+   ========================================================================== */
 export function TasteIllustration() {
   return (
-    <div className="relative flex h-48 items-center justify-center overflow-hidden rounded-3xl sm:h-64">
+    <div
+      role="img"
+      aria-label="Human explicitly bringing a warm cup to their mouth"
+      className="relative flex h-56 sm:h-72 w-full flex-col items-center justify-between overflow-hidden rounded-3xl border border-white bg-white/60 shadow-sm backdrop-blur p-4 pb-5"
+      style={{ backgroundColor: SENSE_COLORS.taste.wash }}
+    >
       <PastelBlobs colors={SENSE_COLORS.taste} />
-      <div className="relative grid place-items-center">
-        <span className="grid h-28 w-28 place-items-center rounded-full bg-white/80 shadow-[0_10px_30px_rgba(219,39,119,0.16)] sm:h-36 sm:w-36">
-          <span
-            className="grid h-16 w-16 place-items-center rounded-full sm:h-20 sm:w-20"
-            style={{ backgroundColor: '#FCE7F3' }}
-          >
-            <span
-              className="block h-6 w-10 rounded-b-2xl border-b-4 sm:h-7 sm:w-12"
-              style={{ borderColor: SENSE_COLORS.taste.accent }}
-            />
-          </span>
-        </span>
-        <span className="absolute left-[16%] top-[20%] animate-float">
-          <Citrus size={20} style={{ color: '#FB923C' }} strokeWidth={1.8} />
-        </span>
-        <span className="absolute bottom-[16%] right-[14%] animate-float" style={{ animationDelay: '1.2s' }}>
-          <Candy size={20} style={{ color: '#F472B6' }} strokeWidth={1.8} />
-        </span>
-        <span className="absolute right-[20%] top-[14%] animate-twinkle">
-          <Cookie size={16} style={{ color: '#D97706' }} strokeWidth={1.8} />
-        </span>
+
+      <div className="relative z-10 flex flex-1 w-full items-center justify-center animate-gentle-breathe">
+        <img
+          src="/images/taste.png"
+          alt="Friendly transparent 3D character tasting warm drink"
+          className="max-h-[140px] sm:max-h-[190px] w-auto object-contain drop-shadow-xl"
+        />
+      </div>
+
+      <div className="relative z-20 mt-3 rounded-full bg-white/95 backdrop-blur-xl border border-[#F9A8D4]/50 px-5 py-2 text-[11px] font-extrabold uppercase tracking-widest text-[#DB2777] shadow-sm">
+        Taste Mindfully
       </div>
     </div>
   );
@@ -251,3 +253,11 @@ export function CompletionIllustration() {
     </div>
   );
 }
+
+export const STEP_ILLUSTRATIONS = {
+  touch: TouchIllustration,
+  sight: SightIllustration,
+  sound: SoundIllustration,
+  smell: SmellIllustration,
+  taste: TasteIllustration,
+};
